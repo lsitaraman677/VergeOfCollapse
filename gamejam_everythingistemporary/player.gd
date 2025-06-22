@@ -12,8 +12,7 @@ const slowFact = 0.975
 
 func _ready():
 	boostcol = []
-	var rand = RandomNumberGenerator.new()
-	var col = Color(rand.randf(), rand.randf(), rand.randf())
+	var col = Color(randf(), randf(), randf())
 	for i in range(3):
 		boostcol.append(col)
 	position = get_viewport().get_window().size * 0.5
