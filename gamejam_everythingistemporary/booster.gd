@@ -1,14 +1,29 @@
-extends AnimatedSprite2D
+extends ProgressBar
 
-func get_boost_force(power, reposition=true):
+var float_value = 1.0
+
+func _ready():
+	var fill = get_theme_stylebox("fill").duplicate()
+	fill.bg_color = Color(0, 1, 0, 0.5)
+	add_theme_stylebox_override("fill", fill)
+	
+func _process(dt):
+	value = float_value
 	var mouse_pos = get_global_mouse_position() - global_position
-	var ang = atan2(mouse_pos.y, mouse_pos.x)
-	if reposition:
-		rotation = ang
+	$AnimatedSprite2D.rotation = atan2(mouse_pos.y, mouse_pos.x)
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		if animation == 'paused':
-			play('playing')
+		if (value > 0) and ($AnimatedSprite2D.animation == 'paused'):
+			$AnimatedSprite2D.play('playing')
+		float_value -= 0.5 * dt
+		if float_value < 0:
+			float_value = 0
+	else:
+		$AnimatedSprite2D.play('paused')
+
+func get_boost_force(power):
+	if value == 0:
+		return Vector2.ZERO
+	var ang = $AnimatedSprite2D.rotation
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		return -Vector2(cos(ang), sin(ang)) * power
-	play('paused')
-	frame = 0
 	return Vector2.ZERO

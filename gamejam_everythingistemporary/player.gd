@@ -24,7 +24,7 @@ func _process(dt):
 func updatePos(dt):
 	if Input.is_action_pressed("ui_accept"):
 		return
-	var force = $AnimatedSprite2D.get_boost_force(power)
+	var force = $ProgressBar.get_boost_force(power)
 	velocity += force * dt
 	velocity.y += g * dt
 	velocity *= slowFact
