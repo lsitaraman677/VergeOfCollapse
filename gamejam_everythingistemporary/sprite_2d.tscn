@@ -1,7 +1,63 @@
-[gd_scene load_steps=3 format=3 uid="uid://yfkpktq5juw7"]
+[gd_scene load_steps=17 format=3 uid="uid://yfkpktq5juw7"]
 
 [ext_resource type="Texture2D" uid="uid://co65kytf3bpq1" path="res://icon.svg" id="1_mehiu"]
+[ext_resource type="Script" uid="uid://cw854bcxouhos" path="res://game.gd" id="2_i1wwn"]
 [ext_resource type="Script" uid="uid://cyl4nhkidhfn5" path="res://player.gd" id="2_lt4yx"]
+[ext_resource type="Texture2D" uid="uid://cy0ofnqgh8unv" path="res://rocket_frames/frame0.png" id="4_iqeq5"]
+[ext_resource type="Texture2D" uid="uid://cjbudgcdp5oxs" path="res://rocket_frames/frame1.png" id="5_f166j"]
+[ext_resource type="Texture2D" uid="uid://cgo7lghvxuk0m" path="res://rocket_frames/frame2.png" id="6_hltx7"]
+[ext_resource type="Texture2D" uid="uid://dvcofplsmcqhy" path="res://rocket_frames/frame3.png" id="7_shsg8"]
+[ext_resource type="Texture2D" uid="uid://c8bddisvl080f" path="res://rocket_frames/frame4.png" id="8_ikdaa"]
+[ext_resource type="Texture2D" uid="uid://cyv2bvc0ibdwr" path="res://rocket_frames/frame5.png" id="9_v7144"]
+[ext_resource type="Texture2D" uid="uid://dmyac8oxtmuxo" path="res://rocket_frames/frame6.png" id="10_75u5r"]
+[ext_resource type="Texture2D" uid="uid://dqxry7quifu8n" path="res://rocket_frames/frame7.png" id="11_st8jt"]
+[ext_resource type="Texture2D" uid="uid://ctk2lpjxxcc5g" path="res://rocket_frames/frame8.png" id="12_w7wq1"]
+[ext_resource type="Texture2D" uid="uid://cqejkwo4ot2h6" path="res://rocket_frames/frame9.png" id="13_3ymp8"]
+[ext_resource type="Script" uid="uid://ddcq64s5h4i7s" path="res://booster.gd" id="14_0a62h"]
+[ext_resource type="Script" uid="uid://b3bh2emi20pel" path="res://character_draw.gd" id="15_f166j"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_teref"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_iqeq5")
+}],
+"loop": true,
+"name": &"paused",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_hltx7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_shsg8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_ikdaa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_v7144")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_75u5r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_st8jt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_w7wq1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_3ymp8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_f166j")
+}],
+"loop": true,
+"name": &"playing",
+"speed": 15.0
+}]
 
 [node name="TextureRect" type="TextureRect"]
 offset_left = -3341.0
@@ -9,6 +65,7 @@ offset_top = -2076.0
 offset_right = 3318.0
 offset_bottom = 1837.0
 texture = ExtResource("1_mehiu")
+script = ExtResource("2_i1wwn")
 
 [node name="Area2D" type="Area2D" parent="."]
 script = ExtResource("2_lt4yx")
@@ -17,9 +74,18 @@ script = ExtResource("2_lt4yx")
 position = Vector2(0, -2)
 polygon = PackedVector2Array(-64, 66, 63, 66, 63, -62, -64, -62)
 
-[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
-texture = ExtResource("1_mehiu")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Area2D"]
+position = Vector2(2.83556, 0)
+scale = Vector2(1.94311, 2.05)
+sprite_frames = SubResource("SpriteFrames_teref")
+animation = &"playing"
+centered = false
+offset = Vector2(10, -20)
+script = ExtResource("14_0a62h")
 
-[node name="Camera2D" type="Camera2D" parent="Area2D/Sprite2D"]
+[node name="Node2D" type="Node2D" parent="Area2D"]
+script = ExtResource("15_f166j")
+
+[node name="Camera2D" type="Camera2D" parent="Area2D"]
 
 [connection signal="area_entered" from="Area2D" to="Area2D" method="_on_area_entered"]

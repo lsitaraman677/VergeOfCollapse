@@ -14,7 +14,7 @@ func _ready():
 	var p = []
 	var curp = Vector2.ZERO
 	p.append(curp)
-	for i in range(7):
+	for i in range(4):
 		var mag = 100 + randf() * 100
 		var ang = randf() * 2 * PI
 		var new = curp + Vector2(cos(ang), sin(ang)) * mag
@@ -25,11 +25,11 @@ func _ready():
 			new = curp + Vector2(cos(ang), sin(ang)) * mag
 		curp = new
 		p.append(curp)
-	plat.initialize([	Vector2(0, 0),
-						Vector2(20, 20),
-						Vector2(160, 40),
-						Vector2(380, 20),
-						Vector2(400, 0)])
+	#plat.initialize([	Vector2(0, 0),
+						#Vector2(20, 20),
+						#Vector2(160, 40),
+						#Vector2(380, 20),
+						#Vector2(400, 0)])
 	plat.initialize(p)
 	
 func _process(dt: float):
@@ -39,3 +39,5 @@ func _draw():
 	var p = get_children()[0].min_dist(get_local_mouse_position(), 15)
 	draw_circle(p, 5, Color(1, 1, 1))
 	
+func within_camera(rect):
+	return true

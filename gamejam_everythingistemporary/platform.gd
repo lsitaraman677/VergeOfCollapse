@@ -5,11 +5,17 @@ class_name Platform
 var poly_x
 var poly_y
 var bbox
+var ticks = 0
+var max_ticks = 30
+var break_point = -1
+var fade = 0
 
 func _ready():
 	pass
 	
-func _process(dt: float):
+func _process(dt):
+	if (break_point < 0) and (ticks > max_ticks):
+		break_point = randf() * 0.5 + 0.25
 	queue_redraw()
 
 func initialize(points):
@@ -104,16 +110,56 @@ func eval_poly(poly, val):
 	return res
 	
 func _draw():
-	var t = 0.01
-	var p1 = Vector2(eval_poly(poly_x, 0.0), eval_poly(poly_y, 0.0))
-	while t < 1:
-		var p2 = Vector2(eval_poly(poly_x, t), eval_poly(poly_y, t))
+	if break_point >= 0:
+		if fade > 1:
+			return
+		var modpoint = func(point, base, rot, shift):
+			var diff = point - base
+			var c = cos(rot)
+			var s = sin(rot)
+			diff = Vector2(diff.x * c - diff.y * s, diff.y * c + diff.x * s)
+			return diff + base + shift
+		var xshift = fade * 200
+		var yshift = fade * fade * 1500
+		var rotshift = fade * 0.2 * PI
+		var t = 0.01
+		var midt1 = break_point * 0.5
+		var base1 = Vector2(eval_poly(poly_x, midt1), eval_poly(poly_y, midt1))
+		var midt2 = (1 - break_point) * 0.5 + break_point
+		var base2 = Vector2(eval_poly(poly_x, midt2), eval_poly(poly_y, midt2))
+		var p1 = Vector2(eval_poly(poly_x, 0.0), eval_poly(poly_y, 0.0))
+		p1 = modpoint.call(p1, base1, rotshift, Vector2(-xshift, yshift))
+		while t < break_point:
+			var p2 = Vector2(eval_poly(poly_x, t), eval_poly(poly_y, t))
+			p2 = modpoint.call(p2, base1, rotshift, Vector2(-xshift, yshift))
+			draw_line(p1, p2, Color(1, 1, 1, 1 - fade), 3)
+			p1 = p2
+			t += 0.01
+		p1 = Vector2(eval_poly(poly_x, t), eval_poly(poly_y, t))
+		p1 = modpoint.call(p1, base2, -rotshift, Vector2(xshift, yshift))
+		while t < 1:
+			var p2 = Vector2(eval_poly(poly_x, t), eval_poly(poly_y, t))
+			p2 = modpoint.call(p2, base2, -rotshift, Vector2(xshift, yshift))
+			draw_line(p1, p2, Color(1, 1, 1, 1 - fade), 3)
+			p1 = p2
+			t += 0.01
+		var p2 = Vector2(eval_poly(poly_x, 1.0), eval_poly(poly_y, 1.0))
+		p2 = modpoint.call(p2, base2, -rotshift, Vector2(xshift, yshift))
+		draw_line(p1, p2, Color(1, 1, 1, 1 - fade), 3)
+		fade += 0.01
+	else:
+		if not get_parent().within_camera(bbox):
+			return
+		var t = 0.01
+		var p1 = Vector2(eval_poly(poly_x, 0.0), eval_poly(poly_y, 0.0))
+		while t < 1:
+			var p2 = Vector2(eval_poly(poly_x, t), eval_poly(poly_y, t))
+			draw_line(p1, p2, Color(1, 1, 1), 3)
+			p1 = p2
+			t += 0.01
+		var p2 = Vector2(eval_poly(poly_x, 1.0), eval_poly(poly_y, 1.0))
 		draw_line(p1, p2, Color(1, 1, 1), 3)
-		p1 = p2
-		t += 0.01
-	var p2 = Vector2(eval_poly(poly_x, 1.0), eval_poly(poly_y, 1.0))
-	draw_line(p1, p2, Color(1, 1, 1), 3)
-	draw_rect(bbox, Color(0, 0, 0), false, 3)
+		#draw_rect(bbox, Color(0, 0, 0), false, 3)
 	
 func dxdt(val=null):
 	if val == null:
@@ -138,7 +184,7 @@ func dydt(val=null):
 func dydx(val):
 	return dydt(val) / dxdt(val)
 		
-func min_dist(point, finetune=0):
+func min_dist(point, finetune=0, coarse=10):
 	var t = 0
 	var best_t = 1.0
 	var curp = Vector2(eval_poly(poly_x, 1.0), eval_poly(poly_y, 1.0))
@@ -166,16 +212,39 @@ func min_dist(point, finetune=0):
 		var dl = deriv * 1e-4
 		var dt = dl / ((dxdt_val**2 + dydt_val**2)**0.5)
 		t -= dt
+		#var xgap = xt - point.x
+		#var ygap = yt - point.y
+		#var deriv = (xgap * dxdt_val + ygap * dydt_val) / sqrt(xgap**2 + ygap**2)
 		#t -= deriv * 1e-7
 		if t < 0:
 			t = 0
+			break
 		if t > 1:
 			t = 1
+			break
 	xt = eval_poly(poly_x, t)
 	yt = eval_poly(poly_y, t)
 	return Vector2(xt, yt)
 		
-		
+func circle_protrusion_vec(center, radius):
+	if break_point >= 0:
+		return Vector2.ZERO
+	if center.x < bbox.position.x - radius:
+		return Vector2.ZERO
+	if center.x > bbox.position.x + bbox.size.x + radius:
+		return Vector2.ZERO
+	if center.y < bbox.position.y - radius:
+		return Vector2.ZERO
+	if center.y > bbox.position.y + bbox.size.y + radius:
+		return Vector2.ZERO
+	var closest = min_dist(center, 15)
+	var prot = radius - closest.distance_to(center)
+	if prot < 0:
+		return Vector2.ZERO
+	return (center - closest).normalized() * prot
+	
+	
+	
 	
 	
 	
