@@ -1,10 +1,43 @@
-extends TextureRect
+extends TileMap
 
+var fuel_maker = preload("res://fuel.tscn")
 
 func _ready():
 	var lines = FileAccess.open('res://levels.txt', FileAccess.READ).get_as_text().split('\n')
-	add_child(get_platform(lines[0]))
+	for i in lines:
+		if len(i) == 0:
+			continue
+		if i[0] == 'p':
+			var plat = get_platform(i.substr(2))
+			add_child(plat)
+		elif i[0] == 'f':
+			var fuel = fuel_maker.instantiate()
+			fuel.position = get_vec(i.substr(2))
+			add_child(fuel)
+			
+func _process(dt):
+	var pos = $Area2D.position
+	for i in get_children():
+		if i.has_method("fuel") and i.usable:
+			if i.proximity(pos) < 75:
+				i.use()
+				$Area2D/ProgressBar.reset_fuel()
 	
+func get_vec(str):
+	var first = true
+	var n1 = ''
+	var n2 = ''
+	for i in str:
+		if first:
+			if i == ',':
+				first = false
+			elif i in '0123456789.':
+				n1 += i
+		else:
+			if i in '0123456789.':
+				n2 += i
+	return Vector2(float(n1), float(n2))
+		
 func get_platform(str):
 	var curnum = ''
 	var open = false

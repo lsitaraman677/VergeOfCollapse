@@ -9,6 +9,7 @@ func _ready():
 	#var vals = PackedFloat32Array([-2, 5, 1])
 	var plat = Platform.new()
 	add_child(plat)
+	add_child(preload("res://fuel.tscn").instantiate())
 	#print(plat.solve_system(mat, vals))
 	position = Vector2(300, 300)
 	var p = []
@@ -33,6 +34,9 @@ func _ready():
 	plat.initialize(p)
 	
 func _process(dt: float):
+	var f = get_children()[1]
+	if f.position.distance_to(get_local_mouse_position()) < 50:
+		f.use()
 	queue_redraw()
 	
 func _draw():

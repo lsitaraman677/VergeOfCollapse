@@ -7,8 +7,9 @@ var cur_delta
 var boostcol
 const boostSize = 100
 const power = 3000
-const slowFact = 0.985
+const airRes = 0.001
 const forceFact = 50
+const window = Rect2(0, 0, 5000, 3000)
 
 func _ready():
 	boostcol = []
@@ -27,25 +28,23 @@ func updatePos(dt):
 	var force = $ProgressBar.get_boost_force(power)
 	velocity += force * dt
 	velocity.y += g * dt
-	velocity *= slowFact
+	velocity -= velocity.normalized() * (velocity.length()**2 * airRes) * dt
 	var oldPos = position
 	position += velocity * dt
 	var moveDir = get_parent().get_plat_prot()
 	if moveDir.length() > 0.1:
 		position += moveDir
 		velocity = (position - oldPos) / dt
-	var window = get_parent().size
-	if position.x < 0:
-		position.x = 0
+	if position.x < window.position[0] + 50:
+		position.x = window.position[0] + 50
 		velocity.x = 0
-	elif position.x > window.x:
-		position.x = window.x
+	elif position.x > window.position[0] + window.size[0] - 50:
+		position.x = window.position[0] + window.size[0] - 50
 		velocity.x = 0
-	if position.y < 0:
-		position.y = 0
+	if position.y < window.position[1] + 50:
+		position.y = window.position[1] + 50
 		velocity.y = 0
-	elif position.y > window.y:
-		position.y = window.y
+	elif position.y > window.position[1] + window.size[1] - 50:
+		position.y = window.position[1] + window.size[1] - 50
 		velocity.y = 0
 		
-	

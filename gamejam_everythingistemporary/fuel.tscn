@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://bfxj8icu44fod"]
+
+[ext_resource type="Texture2D" uid="uid://d1kulkfkws407" path="res://fuel.png" id="1_2yow3"]
+[ext_resource type="Script" uid="uid://du437bxt4do0e" path="res://fuel_control.gd" id="1_u4qh6"]
+[ext_resource type="Script" uid="uid://btwnshijbcoyb" path="res://fuel.gd" id="2_u4qh6"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_u4qh6")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(2, -4)
+scale = Vector2(0.725806, 0.725806)
+texture = ExtResource("1_2yow3")
+region_enabled = true
+region_rect = Rect2(89, 121.5, 93, 116)
+script = ExtResource("2_u4qh6")
