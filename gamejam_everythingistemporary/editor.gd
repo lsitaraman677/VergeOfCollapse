@@ -13,4 +13,37 @@ func _process(dt):
 		if tlp != null:
 			window.position = mpos - tlp + old_window.position
 		elif trp != null:
-			window.position.y = mpos
+			var ydiff = mpos.y - trp.y
+			window.position.y = old_window.position.y + ydiff
+			window.size.y = old_window.size.y - ydiff
+			window.size.x = mpos.x - trp.x + old_window.size.x
+		elif blp != null:
+			var xdiff = mpos.x - blp.x
+			window.position.x = old_window.position.x + xdiff
+			window.size.x = old_window.size.x - xdiff
+			window.size.y = mpos.y - blp.y
+		elif brp != null:
+			window.size = mpos - brp + old_window.size
+	else:
+		var tl = window.position
+		var tr = window.position + Vector2(window.size.x, 0)
+		var bl = window.position + Vector2(0, window.size.y)
+		var br = window.position + window.size
+		if tl.distance_to(mpos) < 10:
+			tlp = mpos
+		else:
+			tlp = null
+		if tr.distance_to(mpos) < 10:
+			trp = mpos
+		else:
+			trp = null
+		if bl.distance_to(mpos) < 10:
+			blp = mpos
+		else:
+			blp = null
+		if br.distance_to(mpos) < 10:
+			brp = mpos
+		else:
+			brp = null
+		old_window = window + Vector2.ZERO
+			
