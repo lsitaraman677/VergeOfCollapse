@@ -16,3 +16,36 @@ script = ExtResource("3_q0a35")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("2_vjobr")
+
+[node name="platform" type="Button" parent="Camera2D"]
+offset_left = -296.0
+offset_top = -255.0
+offset_right = -196.0
+offset_bottom = -224.0
+text = "Platform (p)"
+
+[node name="fuel" type="Button" parent="Camera2D"]
+offset_left = -148.0
+offset_top = -256.0
+offset_right = -48.0
+offset_bottom = -225.0
+text = "Fuel (f)"
+
+[node name="start" type="Button" parent="Camera2D"]
+offset_left = 39.0
+offset_top = -254.0
+offset_right = 151.0
+offset_bottom = -223.0
+text = "Start (s)"
+
+[node name="finish" type="Button" parent="Camera2D"]
+offset_left = 214.0
+offset_top = -251.0
+offset_right = 326.0
+offset_bottom = -220.0
+text = "Finish (e)"
+
+[connection signal="pressed" from="Camera2D/platform" to="Camera2D" method="platform_pressed"]
+[connection signal="pressed" from="Camera2D/fuel" to="Camera2D" method="fuel_pressed"]
+[connection signal="pressed" from="Camera2D/start" to="Camera2D" method="start_pressed"]
+[connection signal="pressed" from="Camera2D/finish" to="Camera2D" method="finish_pressed"]

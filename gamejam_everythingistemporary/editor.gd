@@ -1,7 +1,7 @@
 extends TileMap
 
 var window = Rect2(0, 0, 1000, 1000)
-var old_window
+var old_window = Rect2(0, 0, 1000, 1000)
 var tlp = null
 var trp = null
 var blp = null
@@ -11,7 +11,9 @@ func _process(dt):
 	var mpos = get_local_mouse_position()
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		if tlp != null:
-			window.position = mpos - tlp + old_window.position
+			var diff = mpos - tlp
+			window.position = old_window.position + diff
+			window.size = old_window.size - diff
 		elif trp != null:
 			var ydiff = mpos.y - trp.y
 			window.position.y = old_window.position.y + ydiff
@@ -21,7 +23,7 @@ func _process(dt):
 			var xdiff = mpos.x - blp.x
 			window.position.x = old_window.position.x + xdiff
 			window.size.x = old_window.size.x - xdiff
-			window.size.y = mpos.y - blp.y
+			window.size.y = mpos.y - blp.y + old_window.size.y
 		elif brp != null:
 			window.size = mpos - brp + old_window.size
 	else:
@@ -45,5 +47,5 @@ func _process(dt):
 			brp = mpos
 		else:
 			brp = null
-		old_window = window + Vector2.ZERO
+		old_window = Rect2(window.position, window.size)
 			
