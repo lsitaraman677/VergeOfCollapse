@@ -1,6 +1,7 @@
 extends ProgressBar
 
 var float_value = 1.0
+var activated = true
 
 func _ready():
 	var fill = get_theme_stylebox("fill").duplicate()
@@ -14,7 +15,8 @@ func _process(dt):
 	value = float_value
 	var mouse_pos = get_global_mouse_position() - get_parent().global_position
 	$AnimatedSprite2D.rotation = atan2(mouse_pos.y, mouse_pos.x)
-	if (value > 0) and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	var mouse_pressed = activated and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	if (value > 0) and mouse_pressed:
 		if $AnimatedSprite2D.animation == 'paused':
 			$AnimatedSprite2D.play('playing')
 		float_value -= 0.5 * dt

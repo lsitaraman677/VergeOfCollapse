@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqxry7quifu8n"
-path="res://.godot/imported/frame7.png-4814bd9c266d4c41fd94e427cc2ab7e5.ctex"
+uid="uid://bnpqhmo7yrr1j"
+path="res://.godot/imported/background.jpg-5f286b48f62a4f5b273b020c8c99e630.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://rocket_frames/frame7.png"
-dest_files=["res://.godot/imported/frame7.png-4814bd9c266d4c41fd94e427cc2ab7e5.ctex"]
+source_file="res://icons/background.jpg"
+dest_files=["res://.godot/imported/background.jpg-5f286b48f62a4f5b273b020c8c99e630.ctex"]
 
 [params]
 

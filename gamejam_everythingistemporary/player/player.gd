@@ -9,17 +9,20 @@ const boostSize = 100
 const power = 3000
 const airRes = 0.001
 const forceFact = 50
-const window = Rect2(0, 0, 5000, 3000)
+
+func get_bounds():
+	return get_parent().window
 
 func _ready():
 	boostcol = []
 	var col = Color(randf(), randf(), randf())
 	for i in range(3):
 		boostcol.append(col)
-	position = get_viewport().get_window().size * 0.5
 	
 func _process(dt):
 	cur_delta = dt
+	if not get_parent().go:
+		return
 	updatePos(dt)
 	
 func updatePos(dt):
@@ -35,6 +38,7 @@ func updatePos(dt):
 	if moveDir.length() > 0.1:
 		position += moveDir
 		velocity = (position - oldPos) / dt
+	var window = get_bounds()
 	if position.x < window.position[0] + 50:
 		position.x = window.position[0] + 50
 		velocity.x = 0
