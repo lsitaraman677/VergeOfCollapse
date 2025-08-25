@@ -49,9 +49,9 @@ func initialize(tot_keys):
 	label.size = Vector2(400, 200)
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(-200, -230)
 	label.text = str(curkeys) + '/' + str(keys) + ' keys'
 	label.add_theme_font_size_override("font_size", 30)
+	label.position = Vector2(-200, -230)
 	add_child(label)
 
 func _process(dt):
@@ -61,10 +61,11 @@ func _process(dt):
 	if initial_pos == null:
 		initial_pos = global_position
 	plats.position = initial_pos - global_position
+	label.position = Vector2(-200, -230) + initial_pos - global_position
 
 func add_key():
 	curkeys += 1
-	label.text = curkeys + '/' + keys + ' collected'
+	label.text = str(curkeys) + '/' + str(keys) + ' keys'
 	
 func get_prot(center, radius):
 	var res = Vector2.ZERO

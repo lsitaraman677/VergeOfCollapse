@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://bexv0uoiyam0w"]
+[gd_scene load_steps=6 format=3 uid="uid://bexv0uoiyam0w"]
 
 [ext_resource type="TileSet" uid="uid://cd4701fvf3sxj" path="res://background/new_tile_set.tres" id="1_j82do"]
 [ext_resource type="Script" uid="uid://bimf0os0fdbka" path="res://editor/editor.gd" id="2_6j37k"]
 [ext_resource type="Script" uid="uid://bcv3p1am6v3oy" path="res://editor/window_drawer_editor.gd" id="3_6hpnh"]
 [ext_resource type="Script" uid="uid://cdsb06w50633j" path="res://player/camera_2d.gd" id="4_swf4p"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_j82do"]
+radius = 1.0
 
 [node name="TileMap" type="TileMap"]
 tile_set = ExtResource("1_j82do")
@@ -14,38 +17,84 @@ script = ExtResource("2_6j37k")
 [node name="Node2D" type="Node2D" parent="."]
 script = ExtResource("3_6hpnh")
 
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_j82do")
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("4_swf4p")
 
 [node name="platform" type="Button" parent="Camera2D"]
-offset_left = -296.0
+offset_left = -372.0
 offset_top = -255.0
-offset_right = -196.0
+offset_right = -272.0
 offset_bottom = -224.0
 text = "Platform (p)"
 
 [node name="fuel" type="Button" parent="Camera2D"]
-offset_left = -148.0
+offset_left = -224.0
 offset_top = -256.0
-offset_right = -48.0
+offset_right = -124.0
 offset_bottom = -225.0
 text = "Fuel (f)"
 
 [node name="start" type="Button" parent="Camera2D"]
-offset_left = 39.0
-offset_top = -254.0
-offset_right = 151.0
-offset_bottom = -223.0
+offset_left = 114.0
+offset_top = -258.0
+offset_right = 226.0
+offset_bottom = -227.0
 text = "Start (s)"
 
 [node name="finish" type="Button" parent="Camera2D"]
-offset_left = 214.0
-offset_top = -251.0
-offset_right = 326.0
-offset_bottom = -220.0
+offset_left = 289.0
+offset_top = -255.0
+offset_right = 401.0
+offset_bottom = -224.0
 text = "Finish (e)"
 
-[connection signal="pressed" from="Camera2D/platform" to="Camera2D" method="platform_pressed"]
-[connection signal="pressed" from="Camera2D/fuel" to="Camera2D" method="fuel_pressed"]
-[connection signal="pressed" from="Camera2D/start" to="Camera2D" method="start_pressed"]
-[connection signal="pressed" from="Camera2D/finish" to="Camera2D" method="finish_pressed"]
+[node name="key" type="Button" parent="Camera2D"]
+offset_left = -58.0
+offset_top = -257.0
+offset_right = 54.0
+offset_bottom = -226.0
+text = "Key (k)"
+
+[node name="add" type="Button" parent="Camera2D"]
+offset_left = -521.0
+offset_top = -152.0
+offset_right = -421.0
+offset_bottom = -121.0
+text = "Add (a)"
+
+[node name="modify" type="Button" parent="Camera2D"]
+offset_left = -522.0
+offset_top = -53.0
+offset_right = -422.0
+offset_bottom = -22.0
+text = "Modify (m)"
+
+[node name="remove" type="Button" parent="Camera2D"]
+offset_left = -521.0
+offset_top = 52.0
+offset_right = -421.0
+offset_bottom = 83.0
+text = "Remove (r)"
+
+[node name="Button" type="Button" parent="Camera2D"]
+offset_left = -65.0
+offset_top = 245.0
+offset_right = 68.0
+offset_bottom = 295.0
+theme_override_font_sizes/font_size = 30
+text = "Save File"
+
+[connection signal="pressed" from="Camera2D/platform" to="." method="platform_pressed"]
+[connection signal="pressed" from="Camera2D/fuel" to="." method="fuel_pressed"]
+[connection signal="pressed" from="Camera2D/start" to="." method="start_pressed"]
+[connection signal="pressed" from="Camera2D/finish" to="." method="finish_pressed"]
+[connection signal="pressed" from="Camera2D/key" to="." method="key_pressed"]
+[connection signal="pressed" from="Camera2D/add" to="." method="add_pressed"]
+[connection signal="pressed" from="Camera2D/modify" to="." method="modify_pressed"]
+[connection signal="pressed" from="Camera2D/remove" to="." method="remove_pressed"]
+[connection signal="pressed" from="Camera2D/Button" to="." method="save_objects"]

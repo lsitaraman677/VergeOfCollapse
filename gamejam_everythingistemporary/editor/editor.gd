@@ -7,6 +7,32 @@ var trp = null
 var blp = null
 var brp = null
 
+var base_fuel
+var base_key
+var base_start
+var base_finish
+var active = ''
+var modmode = ''
+var prev_pos_mouse
+var prev_pos_obj
+var holding = null
+var idx = -1
+var ptcol
+var pt = null
+const dotshift = 30
+const dotshiftside = 15
+var objects = []
+
+func _ready():
+	var scene = preload('res://background/sprite_2d.tscn').instantiate()
+	add_child(scene)
+	base_fuel = scene.get_node("fuel").duplicate()
+	base_key = scene.get_node("key").duplicate()
+	base_start = scene.get_node("start").duplicate()
+	base_finish = scene.get_node("finish").duplicate()
+	scene.queue_free()
+	add_pressed()
+
 func _process(dt):
 	var mpos = get_local_mouse_position()
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -48,4 +74,193 @@ func _process(dt):
 		else:
 			brp = null
 		old_window = Rect2(window.position, window.size)
+	if holding != null:
+		if idx == -1:
+			holding.position = prev_pos_obj + get_global_mouse_position() - prev_pos_mouse
+		else:
+			holding.pts[idx] = prev_pos_obj + get_global_mouse_position() - prev_pos_mouse
+			holding.initialize(holding.pts)
+			pt = holding.pts[idx]
+
+func platform_pressed():
+	active = 'p'
+	var p = $Camera2D/platform
+	$Camera2D.active_dot_top = p.position + p.size * 0.5 - Vector2(0, dotshift)
+	
+func fuel_pressed():
+	active = 'f'
+	var f = $Camera2D/fuel
+	$Camera2D.active_dot_top = f.position + f.size * 0.5 - Vector2(0, dotshift)
+	
+func key_pressed():
+	active = 'k'
+	var k = $Camera2D/key
+	$Camera2D.active_dot_top = k.position + k.size * 0.5 - Vector2(0, dotshift)
+	
+func start_pressed():
+	active = 's'
+	var s = $Camera2D/start
+	$Camera2D.active_dot_top = s.position + s.size * 0.5 - Vector2(0, dotshift)
+	
+func finish_pressed():
+	active = 'e'
+	var e = $Camera2D/finish
+	$Camera2D.active_dot_top = e.position + e.size * 0.5 - Vector2(0, dotshift)
+	
+func add_pressed():
+	var f = $Camera2D/add
+	$Camera2D.active_dot_side = f.position + Vector2(-dotshiftside, f.size.y * 0.5)
+	modmode = 'a'
+	
+func modify_pressed():
+	var f = $Camera2D/modify
+	$Camera2D.active_dot_side = f.position + Vector2(-dotshiftside, f.size.y * 0.5)
+	modmode = 'm'
+	
+func remove_pressed():
+	var f = $Camera2D/remove
+	$Camera2D.active_dot_side = f.position + Vector2(-dotshiftside, f.size.y * 0.5)
+	modmode = 'r'
+	
+func _input(input: InputEvent):
+	if (input is InputEventMouseButton) and input.button_index == 1 and (not input.pressed):
+		if (holding is Platform) and (idx == -1):
+			for i in range(len(holding.pts)):
+				holding.pts[i] += holding.position
+			holding.initialize(holding.pts)
+			holding.position = Vector2.ZERO
+		holding = null
+		idx = -1
+	if modmode == 'a':
+		pt = null
+		if (input is InputEventMouseButton) and input.pressed and input.button_index == 1:
+			var pos = get_global_mouse_position()
+			if pos.y < $Camera2D/finish.global_position.y + $Camera2D/finish.size.y:
+				return
+			if pos.x < $Camera2D/add.global_position.x + $Camera2D/add.size.x:
+				return
+			var obj = null
+			if active == 's':
+				obj = base_start.duplicate()
+			elif active == 'e':
+				obj = base_finish.duplicate()
+			elif active == 'k':
+				obj = base_key.duplicate()
+			elif active == 'f':
+				obj = base_fuel.duplicate()
+			if obj != null:
+				obj.position = get_global_mouse_position()
+				obj.show()
+				objects.append(obj)
+				add_child(obj)
+			elif active == 'p':
+				obj = Platform.new()
+				obj.initialize([pos, pos + Vector2(100, 0)])
+				objects.append(obj)
+				add_child(obj)
+	elif modmode == 'm':
+		if holding != null:
+			return
+		pt = null
+		var pos = get_global_mouse_position()
+		$Area2D.position = pos
+		var overlapped = null
+		for obj in objects:
+			if obj is Platform:
+				var testRect = Rect2(obj.bbox.position, obj.bbox.size)
+				testRect.position -= Vector2(20, 20)
+				testRect.size += Vector2(40, 40)
+				if (overlapped == null) and testRect.has_point(pos):
+					overlapped = obj
+					obj.modulate = Color(1, 1, 1, 0.6)
+				else:
+					obj.modulate = Color(1, 1, 1, 1)
+			else:
+				if (overlapped == null) and $Area2D.overlaps_area(obj.get_child(0)):
+					overlapped = obj
+					obj.modulate = Color(1, 1, 1, 0.6)
+				else:
+					obj.modulate = Color(1, 1, 1, 1)
+		if overlapped == null:
+			return
+		idx = -1
+		if overlapped is Platform:
+			for i in range(len(overlapped.pts)):
+				if pos.distance_to(overlapped.pts[i]) < 7:
+					idx = i
+					pt = overlapped.pts[i]
+					ptcol = Color.ORANGE
+					break
+			if idx == -1:
+				var return_val = overlapped.min_dist_full(pos, 15)
+				ptcol = Color.GREEN
+				if pos.distance_to(return_val[0]) < 4:
+					pt = return_val[0]
+					if (input is InputEventMouseButton) and input.button_index == 1 and input.pressed:
+						idx = overlapped.add_point_at(return_val[1])
+		if (input is InputEventMouseButton) and input.button_index == 1 and input.pressed:
+			prev_pos_mouse = pos
+			holding = overlapped
+			if idx == -1:
+				prev_pos_obj = overlapped.position
+			else:
+				prev_pos_obj = overlapped.pts[idx]
+	else:
+		var pos = get_global_mouse_position()
+		$Area2D.position = pos
+		var overlapped = -1
+		for idx in range(len(objects)):
+			var obj = objects[idx]
+			if obj is Platform:
+				var testRect = Rect2(obj.bbox.position, obj.bbox.size)
+				testRect.position -= Vector2(20, 20)
+				testRect.size += Vector2(40, 40)
+				if (overlapped == -1) and testRect.has_point(pos):
+					overlapped = idx
+					obj.modulate = Color(1.5, 0.5, 0.5, 1)
+				else:
+					obj.modulate = Color(1, 1, 1, 1)
+			else:
+				if (overlapped == -1) and $Area2D.overlaps_area(obj.get_child(0)):
+					overlapped = idx
+					obj.modulate = Color(1.5, 0.5, 0.5, 1)
+				else:
+					obj.modulate = Color(1, 1, 1, 1)
+		if (input is InputEventMouseButton) and input.button_index == 1 and input.pressed:
+			if overlapped != -1:
+				objects[overlapped].queue_free()
+				objects.remove_at(overlapped)
+				
+func save_objects():
+	var f = FileAccess.open('res://levels3', FileAccess.WRITE)
+	var s = ''
+	for i in objects:
+		var cur = ''
+		if i is Platform:
+			cur += 'p: ['
+			for p in i.pts:
+				cur += str(p) + ', '
+			cur = cur.substr(0, len(cur) - 2) + ']'
+		else:
+			if i.name == 'fuel':
+				cur = 'f: '
+			elif i.name == 'key':
+				cur = 'k: '
+			elif i.name == 'start':
+				cur = 's: '
+			else:
+				cur = 'e: '
+			cur += str(i.position)
+		s += cur + '\n'
+	var wp = window.position
+	var ws = window.size
+	s += 'w: ' + '(' + str(wp.x) + ', ' + str(wp.y) + ', ' + str(ws.x) + ', ' + str(ws.y)+ ')\n'
+	f.store_string(s)
+	f.close()	
 			
+			
+func within_camera(rect):
+	var center = $Camera2D.position
+	var w = get_viewport_rect().size.x * $Camera2D.scale.x
+	var h = get_viewport_rect().size.y * $Camera2D.scale.y
+	return rect.intersects(Rect2(center.x - w * 0.5, center.y - h * 0.5, w, h))

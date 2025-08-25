@@ -9,6 +9,7 @@ var ticks = 0
 var max_ticks = 30
 var break_point = -1
 var fade = 0
+var pts
 
 func _ready():
 	pass
@@ -19,6 +20,7 @@ func _process(dt):
 	queue_redraw()
 
 func initialize(points):
+	pts = points
 	var n = len(points)
 	var total_length = 0.0
 	for i in range(n - 1):
@@ -225,6 +227,62 @@ func min_dist(point, finetune=0, coarse=10):
 	xt = eval_poly(poly_x, t)
 	yt = eval_poly(poly_y, t)
 	return Vector2(xt, yt)
+	
+func min_dist_full(point, finetune=0, coarse=10):
+	var t = 0
+	var best_t = 1.0
+	var curp = Vector2(eval_poly(poly_x, 1.0), eval_poly(poly_y, 1.0))
+	var mindist = curp.distance_to(point)
+	while t <= 1.0:
+		curp = Vector2(eval_poly(poly_x, t), eval_poly(poly_y, t))
+		var dist = curp.distance_to(point)
+		if dist < mindist:
+			mindist = dist
+			best_t = t
+		t += 0.025
+		# (x(t) - xi)^2 + (y(t) - yi^2)
+		# 2(x(t) - xi)*x'(t) + 2(y(t) - yi)*y'(t)
+	t = best_t
+	var dxdt = dxdt()
+	var dydt = dydt()
+	var xt
+	var yt
+	for i in range(finetune):
+		xt = eval_poly(poly_x, t)
+		yt = eval_poly(poly_y, t)
+		var dxdt_val = eval_poly(dxdt, t)
+		var dydt_val = eval_poly(dydt, t)
+		var deriv = 2 * (xt - point.x) * dxdt_val + 2 * (yt - point.y) * dydt_val
+		var dl = deriv * 1e-4
+		var dt = dl / ((dxdt_val**2 + dydt_val**2)**0.5)
+		t -= dt
+		#var xgap = xt - point.x
+		#var ygap = yt - point.y
+		#var deriv = (xgap * dxdt_val + ygap * dydt_val) / sqrt(xgap**2 + ygap**2)
+		#t -= deriv * 1e-7
+		if t < 0:
+			t = 0
+			break
+		if t > 1:
+			t = 1
+			break
+	xt = eval_poly(poly_x, t)
+	yt = eval_poly(poly_y, t)
+	return [Vector2(xt, yt), t]
+	
+func add_point_at(t_val):
+	var t = 0
+	var idx = 0
+	while t < t_val:
+		var x = eval_poly(poly_x, t)
+		var y = eval_poly(poly_y, t)
+		if pts[idx].distance_to(Vector2(x, y)) < 5:
+			idx += 1
+		t += 0.01
+	var to_add = Vector2(eval_poly(poly_x, t_val), eval_poly(poly_y, t_val))
+	pts.insert(idx, to_add)
+	initialize(pts)
+	return idx
 		
 func circle_protrusion_vec(center, radius):
 	if break_point >= 0:

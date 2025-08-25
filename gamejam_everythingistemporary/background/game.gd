@@ -1,8 +1,10 @@
 extends TileMap
 
-var window = Rect2(0, 0, 5000, 3000)
+var window
 var finish
 var go = false
+var time
+var finish_reached
 
 func _ready():
 	load_level("res://levels/level2.txt")
@@ -13,7 +15,19 @@ func _process(dt):
 			go = true
 			set_play(true)
 			$Area2D/ProgressBar.activated = true
-			
+			$Area2D/space.hide()
+	else:
+		if not finish_reached:
+			time += 1.0/60.0
+			$Area2D/time.text = format_time(time)
+		else:
+			if not finish.visible:
+				var s = $Node2D/success
+				if not s.visible:
+					s.text = 'Sucess!\n' + format_time(time)
+					s.show()
+				if s.modulate.a < 1:
+					s.modulate.a += 1 * dt
 	
 func load_level(fname):
 	var to_delete = []
@@ -60,13 +74,24 @@ func load_level(fname):
 	finish.initialize(finish_vec, sprite)
 	add_child(start)
 	add_child(finish)
-	$Area2D.position = start.initial_pos - Vector2(0, 50)
+	$Area2D.position = start.initial_pos + Vector2(0, -50)
 	go = false
 	set_play(false)
 	$Area2D/ProgressBar.activated = false
 	$Area2D/ProgressBar.set_process(true)
+	$Area2D/space.show()
+	$Area2D/time.text = format_time(0)
+	$Node2D/success.hide()
+	$Node2D/success.modulate.a = 0
+	time = 0
+	finish_reached = false
 	
-	
+func format_time(secs):
+	var mins = int(secs/60)
+	var secs_str = str(secs - mins * 60.0) + '00'
+	secs_str = secs_str.substr(0, secs_str.find('.') + 3)
+	return 'Time: ' + str(mins) + ':' + secs_str
+
 func get_rect(s):
 	var cur = ''
 	var res = []
@@ -155,9 +180,9 @@ func touched(area):
 		if p.name == 'fuel':
 			$Area2D/ProgressBar.reset_fuel()
 		elif p.name == 'key':
-			finish.add_key()
+			finish.get_child(0).add_key()
 		elif p.name == 'finish':
-			print('here')
+			finish_reached = true
 			
 func set_play(p):
 	var children = [get_children()]
@@ -171,5 +196,6 @@ func set_play(p):
 			return
 		children = next_children
 		next_children = []
+
 	
 	

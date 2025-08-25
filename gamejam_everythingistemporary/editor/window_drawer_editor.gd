@@ -15,3 +15,5 @@ func _draw():
 		draw_circle(w.position + Vector2(0, w.size.y), 10, Color(1, 0, 0), false)
 	if(get_parent().brp != null):
 		draw_circle(w.position + w.size, 10, Color(1, 0, 0), false)
+	if(get_parent().pt != null):
+		draw_circle(get_parent().pt, 3, get_parent().ptcol, true)
