@@ -7,7 +7,9 @@ var time
 var finish_reached
 
 func _ready():
-	load_level("res://levels/level2.txt")
+	load_level("user://level3.txt")
+	# print(FileAccess.open('user://level3.txt', FileAccess.READ).get_as_text())
+	# load_level("res://levels/level2.txt")
 			
 func _process(dt):
 	if not go:
@@ -125,6 +127,7 @@ func get_platform(s):
 	var firstnum = false
 	var curvec
 	var vecs = PackedVector2Array()
+	var lastnum = ''
 	for i in s:
 		if open:
 			if firstnum:
@@ -147,10 +150,13 @@ func get_platform(s):
 				open = true
 				firstnum = true
 				curvec = Vector2.ZERO
+			elif i in '0123456789.':
+				lastnum += i
 	if len(vecs) <= 1:
 		return null
 	var plat = Platform.new()
 	plat.initialize(vecs)
+	plat.max_time = float(lastnum)
 	return plat
 	
 func within_camera(rect):

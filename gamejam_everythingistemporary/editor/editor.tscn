@@ -3,7 +3,7 @@
 [ext_resource type="TileSet" uid="uid://cd4701fvf3sxj" path="res://background/new_tile_set.tres" id="1_j82do"]
 [ext_resource type="Script" uid="uid://bimf0os0fdbka" path="res://editor/editor.gd" id="2_6j37k"]
 [ext_resource type="Script" uid="uid://bcv3p1am6v3oy" path="res://editor/window_drawer_editor.gd" id="3_6hpnh"]
-[ext_resource type="Script" uid="uid://cdsb06w50633j" path="res://player/camera_2d.gd" id="4_swf4p"]
+[ext_resource type="Script" uid="uid://cdsb06w50633j" path="res://editor/camera_2d.gd" id="4_swf4p"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_j82do"]
 radius = 1.0
@@ -31,6 +31,7 @@ offset_top = -255.0
 offset_right = -272.0
 offset_bottom = -224.0
 text = "Platform (p)"
+metadata/_edit_use_anchors_ = true
 
 [node name="fuel" type="Button" parent="Camera2D"]
 offset_left = -224.0
@@ -38,6 +39,7 @@ offset_top = -256.0
 offset_right = -124.0
 offset_bottom = -225.0
 text = "Fuel (f)"
+metadata/_edit_use_anchors_ = true
 
 [node name="start" type="Button" parent="Camera2D"]
 offset_left = 114.0
@@ -54,11 +56,12 @@ offset_bottom = -224.0
 text = "Finish (e)"
 
 [node name="key" type="Button" parent="Camera2D"]
-offset_left = -58.0
-offset_top = -257.0
-offset_right = 54.0
-offset_bottom = -226.0
+offset_left = -61.0
+offset_top = -256.0
+offset_right = 51.0
+offset_bottom = -225.0
 text = "Key (k)"
+metadata/_edit_use_anchors_ = true
 
 [node name="add" type="Button" parent="Camera2D"]
 offset_left = -521.0
@@ -81,13 +84,30 @@ offset_right = -421.0
 offset_bottom = 83.0
 text = "Remove (r)"
 
-[node name="Button" type="Button" parent="Camera2D"]
+[node name="save" type="Button" parent="Camera2D"]
 offset_left = -65.0
 offset_top = 245.0
 offset_right = 68.0
 offset_bottom = 295.0
 theme_override_font_sizes/font_size = 30
 text = "Save File"
+
+[node name="accept" type="Button" parent="Camera2D"]
+visible = false
+z_as_relative = false
+offset_left = -172.0
+offset_top = -53.0
+offset_right = 173.0
+offset_bottom = 1.0
+text = "Enter platform persistence time in seconds.
+Click here when done."
+
+[node name="plat_time" type="LineEdit" parent="Camera2D/accept"]
+layout_mode = 0
+offset_left = -13.0
+offset_top = -76.0
+offset_right = 358.0
+offset_bottom = -17.0
 
 [connection signal="pressed" from="Camera2D/platform" to="." method="platform_pressed"]
 [connection signal="pressed" from="Camera2D/fuel" to="." method="fuel_pressed"]
@@ -97,4 +117,5 @@ text = "Save File"
 [connection signal="pressed" from="Camera2D/add" to="." method="add_pressed"]
 [connection signal="pressed" from="Camera2D/modify" to="." method="modify_pressed"]
 [connection signal="pressed" from="Camera2D/remove" to="." method="remove_pressed"]
-[connection signal="pressed" from="Camera2D/Button" to="." method="save_objects"]
+[connection signal="pressed" from="Camera2D/save" to="." method="save_objects"]
+[connection signal="pressed" from="Camera2D/accept" to="." method="accept_pressed"]

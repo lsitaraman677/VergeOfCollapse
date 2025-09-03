@@ -6,7 +6,7 @@ var poly_x
 var poly_y
 var bbox
 var ticks = 0
-var max_ticks = 30
+var max_time = 2
 var break_point = -1
 var fade = 0
 var pts
@@ -15,7 +15,7 @@ func _ready():
 	pass
 	
 func _process(dt):
-	if (break_point < 0) and (ticks > max_ticks):
+	if (break_point < 0) and (ticks > max_time / dt):
 		break_point = randf() * 0.5 + 0.25
 	queue_redraw()
 

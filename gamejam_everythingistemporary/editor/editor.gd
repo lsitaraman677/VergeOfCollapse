@@ -16,6 +16,7 @@ var modmode = ''
 var prev_pos_mouse
 var prev_pos_obj
 var holding = null
+var plat_to_mod = null
 var idx = -1
 var ptcol
 var pt = null
@@ -34,6 +35,8 @@ func _ready():
 	add_pressed()
 
 func _process(dt):
+	if $Camera2D/accept.visible:
+		return
 	var mpos = get_local_mouse_position()
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		if tlp != null:
@@ -123,6 +126,11 @@ func remove_pressed():
 	modmode = 'r'
 	
 func _input(input: InputEvent):
+	if $Camera2D/accept.visible:
+		return
+	var pos = get_global_mouse_position()
+	if not within_buttons(pos):
+		return
 	if (input is InputEventMouseButton) and input.button_index == 1 and (not input.pressed):
 		if (holding is Platform) and (idx == -1):
 			for i in range(len(holding.pts)):
@@ -134,11 +142,6 @@ func _input(input: InputEvent):
 	if modmode == 'a':
 		pt = null
 		if (input is InputEventMouseButton) and input.pressed and input.button_index == 1:
-			var pos = get_global_mouse_position()
-			if pos.y < $Camera2D/finish.global_position.y + $Camera2D/finish.size.y:
-				return
-			if pos.x < $Camera2D/add.global_position.x + $Camera2D/add.size.x:
-				return
 			var obj = null
 			if active == 's':
 				obj = base_start.duplicate()
@@ -162,7 +165,6 @@ func _input(input: InputEvent):
 		if holding != null:
 			return
 		pt = null
-		var pos = get_global_mouse_position()
 		$Area2D.position = pos
 		var overlapped = null
 		for obj in objects:
@@ -198,15 +200,20 @@ func _input(input: InputEvent):
 					pt = return_val[0]
 					if (input is InputEventMouseButton) and input.button_index == 1 and input.pressed:
 						idx = overlapped.add_point_at(return_val[1])
-		if (input is InputEventMouseButton) and input.button_index == 1 and input.pressed:
-			prev_pos_mouse = pos
-			holding = overlapped
-			if idx == -1:
-				prev_pos_obj = overlapped.position
-			else:
-				prev_pos_obj = overlapped.pts[idx]
+		if (input is InputEventMouseButton) and input.pressed:
+			if input.button_index == 1:
+				prev_pos_mouse = pos
+				holding = overlapped
+				if idx == -1:
+					prev_pos_obj = overlapped.position
+				else:
+					prev_pos_obj = overlapped.pts[idx]
+			elif input.button_index == 2:
+				if overlapped is Platform:
+					plat_to_mod = overlapped
+					$Camera2D/accept/plat_time.text = str(overlapped.max_time)
+					$Camera2D/accept.show()
 	else:
-		var pos = get_global_mouse_position()
 		$Area2D.position = pos
 		var overlapped = -1
 		for idx in range(len(objects)):
@@ -230,17 +237,29 @@ func _input(input: InputEvent):
 			if overlapped != -1:
 				objects[overlapped].queue_free()
 				objects.remove_at(overlapped)
-				
+
+func within_buttons(pos):
+	var left_bound = $Camera2D/add
+	var top_bound = $Camera2D/key
+	var bot_bound = $Camera2D/save
+	if pos.x < left_bound.global_position.x + left_bound.size.x:
+		return false
+	if pos.y < top_bound.global_position.y + top_bound.size.y:
+		return false
+	if pos.y > bot_bound.global_position.y:
+		return false
+	return true
+
 func save_objects():
-	var f = FileAccess.open('res://levels3', FileAccess.WRITE)
+	var f = FileAccess.open('user://level3.txt', FileAccess.WRITE)
 	var s = ''
 	for i in objects:
 		var cur = ''
 		if i is Platform:
-			cur += 'p: ['
+			cur += 'p: '
 			for p in i.pts:
 				cur += str(p) + ', '
-			cur = cur.substr(0, len(cur) - 2) + ']'
+			cur += str(i.max_time) 
 		else:
 			if i.name == 'fuel':
 				cur = 'f: '
@@ -258,9 +277,14 @@ func save_objects():
 	f.store_string(s)
 	f.close()	
 			
-			
 func within_camera(rect):
 	var center = $Camera2D.position
 	var w = get_viewport_rect().size.x * $Camera2D.scale.x
 	var h = get_viewport_rect().size.y * $Camera2D.scale.y
 	return rect.intersects(Rect2(center.x - w * 0.5, center.y - h * 0.5, w, h))
+	
+func accept_pressed():
+	var num = $Camera2D/accept/plat_time.text
+	if num.is_valid_float():
+		plat_to_mod.max_time = float(num)
+	$Camera2D/accept.hide()

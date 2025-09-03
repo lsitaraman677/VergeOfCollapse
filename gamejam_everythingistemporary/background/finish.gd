@@ -11,15 +11,21 @@ func _ready():
 	invert_shader.code = """
 	shader_type canvas_item;
 	uniform float alpha;
+	uniform float r;
+	uniform float g;
+	uniform float b;
 	void fragment() {
 		vec4 tex_color = texture(TEXTURE, UV);
-		COLOR = vec4(1.0 - tex_color.rgb, tex_color.a * alpha);
+		COLOR = vec4((1.0-tex_color.r)*r, (1.0-tex_color.g)*g, (1.0-tex_color.b)*b, tex_color.a * alpha);
 	}
 	"""
 	var shader_material = ShaderMaterial.new()
 	shader_material.shader = invert_shader
 	material = shader_material
 	(material as ShaderMaterial).set_shader_parameter("alpha", 1.0)
+	(material as ShaderMaterial).set_shader_parameter("r", 1.0)
+	(material as ShaderMaterial).set_shader_parameter("g", 1.0)
+	(material as ShaderMaterial).set_shader_parameter("b", 1.0)
 
 func initialize(tot_keys):
 	keys = tot_keys
@@ -34,15 +40,19 @@ func initialize(tot_keys):
 	plats.set_script(s)
 	var p = Platform.new()
 	p.initialize([tl, tr])
+	p.max_time = 0.0001
 	plats.add_child(p)
 	p = Platform.new()
 	p.initialize([tr, br])
+	p.max_time = 0.0001
 	plats.add_child(p)
 	p = Platform.new()
 	p.initialize([br, bl])
+	p.max_time = 0.0001
 	plats.add_child(p)
 	p = Platform.new()
 	p.initialize([bl, tl])
+	p.max_time = 0.0001
 	plats.add_child(p)
 	add_child(plats)
 	label = Label.new()
@@ -55,7 +65,10 @@ func initialize(tot_keys):
 	add_child(label)
 
 func _process(dt):
-	(material as ShaderMaterial).set_shader_parameter("alpha", get_parent().modulate.a)
+	(material as ShaderMaterial).set_shader_parameter("alpha", get_parent().modulate.a * modulate.a)
+	(material as ShaderMaterial).set_shader_parameter("r", get_parent().modulate.r * modulate.r)
+	(material as ShaderMaterial).set_shader_parameter("g", get_parent().modulate.g * modulate.g)
+	(material as ShaderMaterial).set_shader_parameter("b", get_parent().modulate.b * modulate.b)
 	if keys == -1:
 		return
 	if initial_pos == null:
@@ -75,7 +88,7 @@ func get_prot(center, radius):
 		if cur.length() > 0.1:
 			res += cur
 			if curkeys >= keys:
-				child.ticks = child.max_ticks + 1
+				child.ticks += 1
 	return res
 	
 func within_camera(rect):
