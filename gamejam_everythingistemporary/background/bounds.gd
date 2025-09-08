@@ -2,7 +2,7 @@ extends Node2D
 
 func _process(dt):
 	var loc = get_parent().get_node("Area2D").global_position - Vector2(400, 200)
-	$success.global_position = loc
+	$success.position = loc
 	queue_redraw()
 	
 func _draw():

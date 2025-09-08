@@ -24,8 +24,11 @@ const dotshift = 30
 const dotshiftside = 15
 var objects = []
 
+var cur_level = ''
+var action = ''
+
 func _ready():
-	var scene = preload('res://background/sprite_2d.tscn').instantiate()
+	var scene = preload('res://background/game.tscn').instantiate()
 	add_child(scene)
 	base_fuel = scene.get_node("fuel").duplicate()
 	base_key = scene.get_node("key").duplicate()
@@ -33,6 +36,7 @@ func _ready():
 	base_finish = scene.get_node("finish").duplicate()
 	scene.queue_free()
 	add_pressed()
+	visibility_changed.connect(toggle_ticking)
 
 func _process(dt):
 	if $Camera2D/accept.visible:
@@ -126,7 +130,7 @@ func remove_pressed():
 	modmode = 'r'
 	
 func _input(input: InputEvent):
-	if $Camera2D/accept.visible:
+	if $Camera2D/accept.visible or $Camera2D/save/accept_level.visible:
 		return
 	var pos = get_global_mouse_position()
 	if not within_buttons(pos):
@@ -188,7 +192,7 @@ func _input(input: InputEvent):
 		idx = -1
 		if overlapped is Platform:
 			for i in range(len(overlapped.pts)):
-				if pos.distance_to(overlapped.pts[i]) < 7:
+				if pos.distance_to(overlapped.pts[i]) < 15:
 					idx = i
 					pt = overlapped.pts[i]
 					ptcol = Color.ORANGE
@@ -250,9 +254,11 @@ func within_buttons(pos):
 		return false
 	return true
 
-func save_objects():
-	var f = FileAccess.open('user://level3.txt', FileAccess.WRITE)
+func save_objects(fname):
+	var f = FileAccess.open(fname, FileAccess.WRITE)
 	var s = ''
+	var start = false
+	var end = false
 	for i in objects:
 		var cur = ''
 		if i is Platform:
@@ -266,15 +272,18 @@ func save_objects():
 			elif i.name == 'key':
 				cur = 'k: '
 			elif i.name == 'start':
+				start = true
 				cur = 's: '
 			else:
+				end = true
 				cur = 'e: '
 			cur += str(i.position)
 		s += cur + '\n'
 	var wp = window.position
 	var ws = window.size
 	s += 'w: ' + '(' + str(wp.x) + ', ' + str(wp.y) + ', ' + str(ws.x) + ', ' + str(ws.y)+ ')\n'
-	f.store_string(s)
+	if start and end:
+		f.store_string(s)
 	f.close()	
 			
 func within_camera(rect):
@@ -288,3 +297,60 @@ func accept_pressed():
 	if num.is_valid_float():
 		plat_to_mod.max_time = float(num)
 	$Camera2D/accept.hide()
+
+func toggle_ticking():
+	set_process(visible)
+	action = ''
+
+func load_level(fname):
+	cur_level = fname
+	remove_all()
+	var lines = FileAccess.open(fname, FileAccess.READ).get_as_text().split('\n')
+	for i in lines:
+		if len(i) == 0:
+			continue
+		if i[0] == 'p':
+			var plat = MainGame.get_platform(i.substr(2))
+			add_child(plat)
+			objects.append(plat)
+		elif i[0] == 'f':
+			var fuel = base_fuel.duplicate()
+			fuel.position = MainGame.get_vec(i.substr(2))
+			fuel.show()
+			add_child(fuel)
+			objects.append(fuel)
+		elif i[0] == 'k':
+			var key = base_key.duplicate()
+			key.position = MainGame.get_vec(i.substr(2))
+			key.show()
+			add_child(key)
+			objects.append(key)
+		elif i[0] == 's':
+			var start = base_start.duplicate()
+			start.position = MainGame.get_vec(i.substr(2))
+			start.show()
+			add_child(start)
+			objects.append(start)
+		elif i[0] == 'e':
+			var end = base_finish.duplicate()
+			end.position = MainGame.get_vec(i.substr(2))
+			end.show()
+			add_child(end)
+			objects.append(end)
+		elif i[0] == 'w':
+			window = MainGame.get_rect(i.substr(2))
+			old_window = Rect2(window.position * 1.0, window.size * 1.0)
+	$Camera2D.position = window.position
+
+func remove_all():
+	objects = []
+	for child in get_children():
+		if child == $Node2D or child == $Camera2D or child == $Area2D:
+			continue
+		child.queue_free()
+
+func ask_load_level():
+	action = 'load level'
+	
+func quit():
+	action = 'quit'

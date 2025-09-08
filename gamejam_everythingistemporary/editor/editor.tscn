@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://bexv0uoiyam0w"]
+[gd_scene load_steps=7 format=3 uid="uid://bexv0uoiyam0w"]
 
 [ext_resource type="TileSet" uid="uid://cd4701fvf3sxj" path="res://background/new_tile_set.tres" id="1_j82do"]
 [ext_resource type="Script" uid="uid://bimf0os0fdbka" path="res://editor/editor.gd" id="2_6j37k"]
 [ext_resource type="Script" uid="uid://bcv3p1am6v3oy" path="res://editor/window_drawer_editor.gd" id="3_6hpnh"]
 [ext_resource type="Script" uid="uid://cdsb06w50633j" path="res://editor/camera_2d.gd" id="4_swf4p"]
+[ext_resource type="Script" uid="uid://c4g5u4uoululb" path="res://editor/save.gd" id="5_6j37k"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_j82do"]
 radius = 1.0
@@ -85,12 +86,31 @@ offset_bottom = 83.0
 text = "Remove (r)"
 
 [node name="save" type="Button" parent="Camera2D"]
-offset_left = -65.0
+offset_left = -305.0
 offset_top = 245.0
-offset_right = 68.0
+offset_right = -172.0
 offset_bottom = 295.0
 theme_override_font_sizes/font_size = 30
 text = "Save File"
+script = ExtResource("5_6j37k")
+
+[node name="LineEdit" type="LineEdit" parent="Camera2D/save"]
+visible = false
+layout_mode = 0
+offset_left = 103.0
+offset_top = -319.0
+offset_right = 507.0
+offset_bottom = -274.0
+
+[node name="accept_level" type="Button" parent="Camera2D/save"]
+visible = false
+layout_mode = 0
+offset_left = 88.0
+offset_top = -369.0
+offset_right = 520.0
+offset_bottom = -338.0
+text = "test
+set"
 
 [node name="accept" type="Button" parent="Camera2D"]
 visible = false
@@ -109,6 +129,31 @@ offset_top = -76.0
 offset_right = 358.0
 offset_bottom = -17.0
 
+[node name="clear" type="Button" parent="Camera2D"]
+modulate = Color(1, 0.5, 0.5, 1)
+offset_left = 173.0
+offset_top = 245.0
+offset_right = 298.0
+offset_bottom = 295.0
+theme_override_font_sizes/font_size = 30
+text = "Clear"
+
+[node name="load" type="Button" parent="Camera2D"]
+offset_left = -79.0
+offset_top = 245.0
+offset_right = 83.0
+offset_bottom = 295.0
+theme_override_font_sizes/font_size = 30
+text = "Load Level"
+
+[node name="exit" type="Button" parent="Camera2D"]
+offset_left = -540.0
+offset_top = -288.0
+offset_right = -442.0
+offset_bottom = -238.0
+theme_override_font_sizes/font_size = 30
+text = "Exit"
+
 [connection signal="pressed" from="Camera2D/platform" to="." method="platform_pressed"]
 [connection signal="pressed" from="Camera2D/fuel" to="." method="fuel_pressed"]
 [connection signal="pressed" from="Camera2D/start" to="." method="start_pressed"]
@@ -117,5 +162,9 @@ offset_bottom = -17.0
 [connection signal="pressed" from="Camera2D/add" to="." method="add_pressed"]
 [connection signal="pressed" from="Camera2D/modify" to="." method="modify_pressed"]
 [connection signal="pressed" from="Camera2D/remove" to="." method="remove_pressed"]
-[connection signal="pressed" from="Camera2D/save" to="." method="save_objects"]
+[connection signal="pressed" from="Camera2D/save" to="Camera2D/save" method="clicked"]
+[connection signal="pressed" from="Camera2D/save/accept_level" to="Camera2D/save" method="accept_pressed"]
 [connection signal="pressed" from="Camera2D/accept" to="." method="accept_pressed"]
+[connection signal="pressed" from="Camera2D/clear" to="." method="remove_all"]
+[connection signal="pressed" from="Camera2D/load" to="." method="ask_load_level"]
+[connection signal="pressed" from="Camera2D/exit" to="." method="quit"]

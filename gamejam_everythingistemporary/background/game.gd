@@ -1,20 +1,25 @@
 extends TileMap
 
+class_name MainGame
+
 var window
 var finish
 var go = false
 var time
 var finish_reached
+var cur_level = 'res://levels/level2.txt'
+var success_state = ''
 
 func _ready():
-	load_level("user://level3.txt")
+	visibility_changed.connect(toggle_ticking)
+	reset_level()
 	# print(FileAccess.open('user://level3.txt', FileAccess.READ).get_as_text())
 	# load_level("res://levels/level2.txt")
 			
 func _process(dt):
 	if not go:
 		if Input.is_action_pressed("ui_accept"):
-			go = true
+			go = true  
 			set_play(true)
 			$Area2D/ProgressBar.activated = true
 			$Area2D/space.hide()
@@ -76,15 +81,17 @@ func load_level(fname):
 	finish.initialize(finish_vec, sprite)
 	add_child(start)
 	add_child(finish)
-	$Area2D.position = start.initial_pos + Vector2(0, -50)
+	$Area2D.position = start.initial_pos + 0*Vector2(0, -50)
 	go = false
 	set_play(false)
 	$Area2D/ProgressBar.activated = false
 	$Area2D/ProgressBar.set_process(true)
+	$Area2D/ProgressBar.float_value = 1.0
 	$Area2D/space.show()
 	$Area2D/time.text = format_time(0)
 	$Node2D/success.hide()
 	$Node2D/success.modulate.a = 0
+	$Node2D.queue_redraw()
 	time = 0
 	finish_reached = false
 	
@@ -94,7 +101,7 @@ func format_time(secs):
 	secs_str = secs_str.substr(0, secs_str.find('.') + 3)
 	return 'Time: ' + str(mins) + ':' + secs_str
 
-func get_rect(s):
+static func get_rect(s):
 	var cur = ''
 	var res = []
 	for i in s:
@@ -106,7 +113,7 @@ func get_rect(s):
 	res.append(float(cur))
 	return Rect2(res[0], res[1], res[2], res[3])
 
-func get_vec(s):
+static func get_vec(s):
 	var first = true
 	var n1 = ''
 	var n2 = ''
@@ -121,7 +128,7 @@ func get_vec(s):
 				n2 += i
 	return Vector2(float(n1), float(n2))
 
-func get_platform(s):
+static func get_platform(s):
 	var curnum = ''
 	var open = false
 	var firstnum = false
@@ -180,6 +187,8 @@ func get_plat_prot():
 func touched(area):
 	if not area.is_visible_in_tree():
 		return
+	if area.owner != owner:
+		return
 	var p = area.get_parent()
 	if p.get_parent().usable:
 		p.get_parent().use()
@@ -203,5 +212,17 @@ func set_play(p):
 		children = next_children
 		next_children = []
 
+func reset_level():
+	load_level(cur_level)
 	
+func toggle_ticking():
+	set_process(visible)
+	set_play(visible)
+	if visible:
+		success_state = ''
 	
+func level_select():
+	success_state = 'level select'
+	
+func next_level():
+	success_state = 'next level'

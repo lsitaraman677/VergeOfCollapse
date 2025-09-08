@@ -25,9 +25,7 @@ func _process(dt):
 		return
 	updatePos(dt)
 	
-func updatePos(dt):
-	if Input.is_action_pressed("ui_accept"):
-		return
+func updatePos(dt): 
 	var force = $ProgressBar.get_boost_force(power)
 	velocity += force * dt
 	velocity.y += g * dt

@@ -1,0 +1,59 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvkgbqf03os6e"]
+
+[ext_resource type="Script" uid="uid://cgotw3yaji3p5" path="res://main/driver.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://8xninp8jqwpn" path="res://main/level_select.gd" id="2_0xm2m"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_ig7tw")
+
+[node name="play" type="Button" parent="."]
+offset_left = 192.0
+offset_top = 275.0
+offset_right = 442.0
+offset_bottom = 375.0
+theme_override_font_sizes/font_size = 60
+text = "Play"
+
+[node name="editor" type="Button" parent="."]
+offset_left = 708.0
+offset_top = 275.0
+offset_right = 958.0
+offset_bottom = 375.0
+theme_override_font_sizes/font_size = 60
+text = "Editor
+"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(575, 325)
+
+[node name="levelSelect" type="Node2D" parent="."]
+z_index = 1
+script = ExtResource("2_0xm2m")
+
+[node name="builtin" type="Label" parent="levelSelect"]
+offset_left = 48.0
+offset_top = 125.0
+offset_right = 250.0
+offset_bottom = 167.0
+theme_override_font_sizes/font_size = 30
+text = "Built-in levels:"
+
+[node name="custom" type="Label" parent="levelSelect"]
+offset_left = 48.0
+offset_top = 368.0
+offset_right = 257.0
+offset_bottom = 410.0
+theme_override_font_sizes/font_size = 30
+text = "Custom levels:"
+
+[node name="Exit" type="Button" parent="levelSelect"]
+offset_left = 25.0
+offset_top = 23.0
+offset_right = 121.0
+offset_bottom = 73.0
+theme_override_font_sizes/font_size = 30
+text = "Exit"
+
+[connection signal="pressed" from="play" to="." method="play_pressed"]
+[connection signal="pressed" from="editor" to="." method="editor_pressed"]
+[connection signal="pressed" from="levelSelect/Exit" to="levelSelect" method="exit"]
