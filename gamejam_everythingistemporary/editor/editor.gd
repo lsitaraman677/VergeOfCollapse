@@ -284,6 +284,7 @@ func save_objects(fname):
 	s += 'w: ' + '(' + str(wp.x) + ', ' + str(wp.y) + ', ' + str(ws.x) + ', ' + str(ws.y)+ ')\n'
 	if start and end:
 		f.store_string(s)
+		print(s)
 	f.close()	
 			
 func within_camera(rect):
