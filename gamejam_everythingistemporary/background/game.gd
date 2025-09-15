@@ -9,6 +9,7 @@ var time
 var finish_reached
 var cur_level = 'res://levels/level2.txt'
 var success_state = ''
+var fake = false
 
 func _ready():
 	visibility_changed.connect(toggle_ticking)
@@ -17,6 +18,8 @@ func _ready():
 	# load_level("res://levels/level2.txt")
 			
 func _process(dt):
+	if fake:
+		return
 	if not go:
 		if Input.is_action_pressed("ui_accept"):
 			go = true  
@@ -81,7 +84,8 @@ func load_level(fname):
 	finish.initialize(finish_vec, sprite)
 	add_child(start)
 	add_child(finish)
-	$Area2D.position = start.initial_pos + 0*Vector2(0, -50)
+	$Area2D.position = start.initial_pos + Vector2(-35, 32)
+	$Area2D.velocity = Vector2.ZERO
 	go = false
 	set_play(false)
 	$Area2D/ProgressBar.activated = false
@@ -105,7 +109,7 @@ static func get_rect(s):
 	var cur = ''
 	var res = []
 	for i in s:
-		if i in '0123546789.':
+		if i in '0123546789.-':
 			cur += i
 		elif i == ',':
 			res.append(float(cur))
@@ -121,10 +125,10 @@ static func get_vec(s):
 		if first:
 			if i == ',':
 				first = false
-			elif i in '0123456789.':
+			elif i in '0123456789.-':
 				n1 += i
 		else:
-			if i in '0123456789.':
+			if i in '0123456789.-':
 				n2 += i
 	return Vector2(float(n1), float(n2))
 
@@ -189,14 +193,16 @@ func touched(area):
 		return
 	if area.owner != owner:
 		return
+	if not visible:
+		return
 	var p = area.get_parent()
 	if p.get_parent().usable:
 		p.get_parent().use()
-		if p.name == 'fuel':
+		if p.has_method('fuel'):
 			$Area2D/ProgressBar.reset_fuel()
-		elif p.name == 'key':
+		elif p.has_method('key'):
 			finish.get_child(0).add_key()
-		elif p.name == 'finish':
+		elif p.has_method('finish'):
 			finish_reached = true
 			
 func set_play(p):

@@ -8,19 +8,29 @@ script = ExtResource("1_ig7tw")
 
 [node name="play" type="Button" parent="."]
 offset_left = 192.0
-offset_top = 275.0
+offset_top = 201.0
 offset_right = 442.0
-offset_bottom = 375.0
+offset_bottom = 301.0
 theme_override_font_sizes/font_size = 60
 text = "Play"
 
 [node name="editor" type="Button" parent="."]
 offset_left = 708.0
-offset_top = 275.0
+offset_top = 201.0
 offset_right = 958.0
-offset_bottom = 375.0
+offset_bottom = 301.0
 theme_override_font_sizes/font_size = 60
 text = "Editor
+"
+
+[node name="viewer" type="Button" parent="."]
+visible = false
+offset_left = 365.0
+offset_top = 437.0
+offset_right = 785.0
+offset_bottom = 537.0
+theme_override_font_sizes/font_size = 40
+text = "Raw Level Viewer
 "
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -53,6 +63,21 @@ offset_right = 121.0
 offset_bottom = 73.0
 theme_override_font_sizes/font_size = 30
 text = "Exit"
+
+[node name="Button" type="Button" parent="."]
+visible = false
+offset_left = 536.0
+offset_top = 574.0
+offset_right = 646.0
+offset_bottom = 617.0
+text = "Save"
+
+[node name="TextEdit" type="TextEdit" parent="Button"]
+layout_mode = 0
+offset_left = -461.0
+offset_top = -524.0
+offset_right = 539.0
+offset_bottom = -24.0
 
 [connection signal="pressed" from="play" to="." method="play_pressed"]
 [connection signal="pressed" from="editor" to="." method="editor_pressed"]

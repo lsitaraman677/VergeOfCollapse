@@ -267,11 +267,11 @@ func save_objects(fname):
 				cur += str(p) + ', '
 			cur += str(i.max_time) 
 		else:
-			if i.name == 'fuel':
+			if i.has_method('fuel'):
 				cur = 'f: '
-			elif i.name == 'key':
+			elif i.has_method('key'):
 				cur = 'k: '
-			elif i.name == 'start':
+			elif i.has_method('start'):
 				start = true
 				cur = 's: '
 			else:
@@ -304,6 +304,7 @@ func toggle_ticking():
 	action = ''
 
 func load_level(fname):
+	print('starting loading process')
 	cur_level = fname
 	remove_all()
 	var lines = FileAccess.open(fname, FileAccess.READ).get_as_text().split('\n')
@@ -341,6 +342,7 @@ func load_level(fname):
 		elif i[0] == 'w':
 			window = MainGame.get_rect(i.substr(2))
 			old_window = Rect2(window.position * 1.0, window.size * 1.0)
+	print('loaded level')
 	$Camera2D.position = window.position
 
 func remove_all():

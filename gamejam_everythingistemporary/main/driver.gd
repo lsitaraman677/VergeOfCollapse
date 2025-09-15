@@ -5,6 +5,8 @@ var game
 var mode = 'main'
 
 func _ready():
+	var f = FileAccess.open("user://L3.txt", FileAccess.READ)
+	print(f.get_as_text())
 	editor = preload("res://editor/editor.tscn").instantiate()
 	game = preload("res://background/game.tscn").instantiate()
 	add_child(editor)
@@ -36,6 +38,10 @@ func _process(dt):
 			main_screen()
 		elif editor.action == 'load level':
 			level_select()
+			editor.action = ''
+		elif editor.action == 'level saved':
+			$leveLSelect.update_children()
+			editor.action = ''
 	queue_redraw()
 	
 func _draw():
@@ -77,4 +83,7 @@ func editor_pressed():
 	if $levelSelect.visible or game.visible or editor.visible:
 		return
 	open_editor()
+	
+func raw_pressed():
+	pass
 	

@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://yfkpktq5juw7"]
+[gd_scene load_steps=31 format=3 uid="uid://yfkpktq5juw7"]
 
 [ext_resource type="TileSet" uid="uid://cd4701fvf3sxj" path="res://background/new_tile_set.tres" id="1_lukdt"]
 [ext_resource type="Script" uid="uid://cw854bcxouhos" path="res://background/game.gd" id="2_ckg1c"]
@@ -18,9 +18,12 @@
 [ext_resource type="Script" uid="uid://xbffv1lbgf8t" path="res://background/bounds.gd" id="16_s3x8w"]
 [ext_resource type="Texture2D" uid="uid://d1kulkfkws407" path="res://icons/fuel.png" id="17_0dnrt"]
 [ext_resource type="Texture2D" uid="uid://baot6y6qarhca" path="res://icons/start_flag.png" id="18_bmxf4"]
+[ext_resource type="Script" uid="uid://bxmcf2chlbjkb" path="res://game_items/fuel.gd" id="18_gw465"]
 [ext_resource type="Texture2D" uid="uid://clw5hliwkqrup" path="res://icons/key.png" id="19_hbuju"]
+[ext_resource type="Script" uid="uid://dkvhg8t4yaw4f" path="res://game_items/start.gd" id="19_qw0aj"]
 [ext_resource type="Texture2D" uid="uid://bbi0vni0xw0g6" path="res://icons/finish.png" id="20_04w3c"]
-[ext_resource type="Script" uid="uid://chy85d1ikibfd" path="res://background/finish.gd" id="21_n0qbw"]
+[ext_resource type="Script" uid="uid://0q2ihv71tn46" path="res://game_items/key.gd" id="21_gw465"]
+[ext_resource type="Script" uid="uid://chy85d1ikibfd" path="res://game_items/finish.gd" id="21_n0qbw"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_teref"]
 animations = [{
@@ -212,6 +215,7 @@ modulate = Color(2, 2, 2, 1)
 texture = ExtResource("17_0dnrt")
 region_enabled = true
 region_rect = Rect2(102, 129.5, 77, 98)
+script = ExtResource("18_gw465")
 
 [node name="Area2D" type="Area2D" parent="fuel"]
 
@@ -224,6 +228,7 @@ visible = false
 position = Vector2(3.8147e-06, -7.62939e-06)
 scale = Vector2(0.46788, 0.46788)
 texture = ExtResource("18_bmxf4")
+script = ExtResource("19_qw0aj")
 
 [node name="Area2D" type="Area2D" parent="start"]
 
@@ -236,6 +241,7 @@ visible = false
 position = Vector2(1, 1)
 scale = Vector2(0.294444, 0.294444)
 texture = ExtResource("19_hbuju")
+script = ExtResource("21_gw465")
 
 [node name="Area2D" type="Area2D" parent="key"]
 

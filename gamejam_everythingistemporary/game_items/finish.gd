@@ -94,3 +94,5 @@ func get_prot(center, radius):
 func within_camera(rect):
 	return get_parent().get_parent().within_camera(Rect2(global_position + rect.position, rect.size))
 	
+func finish():
+	pass
