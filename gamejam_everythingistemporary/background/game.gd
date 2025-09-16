@@ -7,13 +7,12 @@ var finish
 var go = false
 var time
 var finish_reached
-var cur_level = 'res://levels/level2.txt'
+var cur_level = ''
 var success_state = ''
 var fake = false
 
 func _ready():
 	visibility_changed.connect(toggle_ticking)
-	reset_level()
 	# print(FileAccess.open('user://level3.txt', FileAccess.READ).get_as_text())
 	# load_level("res://levels/level2.txt")
 			

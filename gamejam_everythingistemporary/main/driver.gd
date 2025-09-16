@@ -5,8 +5,6 @@ var game
 var mode = 'main'
 
 func _ready():
-	var f = FileAccess.open("user://L3.txt", FileAccess.READ)
-	print(f.get_as_text())
 	editor = preload("res://editor/editor.tscn").instantiate()
 	game = preload("res://background/game.tscn").instantiate()
 	add_child(editor)
@@ -86,4 +84,24 @@ func editor_pressed():
 	
 func raw_pressed():
 	pass
+
+func delete_user_files():
+	var dir = DirAccess.open("user://")
+	if dir == null:
+		push_error("Could not open user://")
+		return
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+	while file_name != "":
+		if file_name != "." and file_name != "..":
+			if not dir.current_is_dir():
+				var abs_path = ProjectSettings.globalize_path("user://" + file_name)
+				var err = DirAccess.remove_absolute(abs_path)
+				if err != OK:
+					push_error("Failed to remove: %s (err %d)" % [abs_path, err])
+				else:
+					print("Deleted:", abs_path)
+		file_name = dir.get_next()
+	dir.list_dir_end()
+
 	

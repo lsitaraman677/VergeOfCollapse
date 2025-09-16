@@ -177,8 +177,11 @@ func _input(input: InputEvent):
 				testRect.position -= Vector2(20, 20)
 				testRect.size += Vector2(40, 40)
 				if (overlapped == null) and testRect.has_point(pos):
-					overlapped = obj
-					obj.modulate = Color(1, 1, 1, 0.6)
+					if pos.distance_to(obj.min_dist(pos)) < 30:
+						overlapped = obj
+						obj.modulate = Color(1, 1, 1, 0.6)
+					else:
+						obj.modulate = Color(1, 1, 1, 1)
 				else:
 					obj.modulate = Color(1, 1, 1, 1)
 			else:
@@ -227,8 +230,11 @@ func _input(input: InputEvent):
 				testRect.position -= Vector2(20, 20)
 				testRect.size += Vector2(40, 40)
 				if (overlapped == -1) and testRect.has_point(pos):
-					overlapped = idx
-					obj.modulate = Color(1.5, 0.5, 0.5, 1)
+					if pos.distance_to(obj.min_dist(pos)) < 20:
+						overlapped = idx
+						obj.modulate = Color(1.5, 0.5, 0.5, 1)
+					else:
+						obj.modulate = Color(1, 1, 1, 1)
 				else:
 					obj.modulate = Color(1, 1, 1, 1)
 			else:
@@ -285,6 +291,7 @@ func save_objects(fname):
 	if start and end:
 		f.store_string(s)
 		print(s)
+		action = 'level saved'
 	f.close()	
 			
 func within_camera(rect):
